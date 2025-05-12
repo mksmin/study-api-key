@@ -1,16 +1,19 @@
+# import libs
 import uvicorn
 
+# import from libs
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from app.core.config import settings
+# import from modules
+from app.core.config import CustomFormatter, logger, settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("starting")
+    logger.info("Start FastAPI APP")
     yield
-    print("stopping")
+    logger.info("Stop FastAPI APP")
 
 
 app = FastAPI(
@@ -33,6 +36,6 @@ if __name__ == '__main__':
 
         uvicorn.run(**run_args)
     except KeyboardInterrupt:
-        print('stopping with KeyboardInterrupt')
+        logger.info('stopping with KeyboardInterrupt')
     except Exception as e:
-        print(e)
+        logger.exception(e)
