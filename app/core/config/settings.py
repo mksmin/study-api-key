@@ -1,8 +1,40 @@
 from pathlib import Path
-from pydantic import PostgresDsn, BaseModel
+from pydantic import PostgresDsn, BaseModel, ValidationError
+from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PATH_PWD = Path(__file__).parent.parent.parent.parent
+
+
+class DatabaseConfig(BaseModel):
+    scheme: str = 'postgresql'
+    engine: str = "asyncpg"
+    username: str
+    password: str
+    host: str = "localhost"
+    port: int = 5432,
+    path: str
+
+    echo: bool = False,
+    echo_pool: bool = False,
+    pool_size: int = 50,
+    max_overflow: int = 10,
+
+    @property
+    def url(self) -> PostgresDsn:
+        try:
+            url_path = MultiHostUrl.build(
+                scheme=f'{self.scheme}+{self.engine}',
+                username=self.username,
+                password=self.password,
+                host=self.host,
+                port=self.port,
+                path=self.path
+            )
+        except ValidationError:
+            raise ValueError("Invalid URL")
+        return PostgresDsn(url_path)
+
 
 class RunConfig(BaseModel):
     host: str = "localhost"
@@ -20,6 +52,7 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__"
     )
 
+    db: DatabaseConfig
     run: RunConfig
 
 
