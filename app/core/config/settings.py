@@ -1,9 +1,13 @@
 from pathlib import Path
-from pydantic import PostgresDsn, BaseModel, ValidationError
+from pydantic import PostgresDsn, BaseModel, ValidationError, Field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PATH_PWD = Path(__file__).absolute().parent.parent.parent.parent
+
+
+class SecretsConfig(BaseModel):
+    key: str
 
 
 class DatabaseConfig(BaseModel):
@@ -49,11 +53,12 @@ class Settings(BaseSettings):
         env_file=(PATH_PWD / ".env.template", PATH_PWD / ".env"),
         case_sensitive=False,
         env_nested_delimiter="__",
-        env_prefix="APP_CONFIG__"
+        env_prefix="APP_CONFIG__",
     )
 
     db: DatabaseConfig
     run: RunConfig
+    secret: SecretsConfig
 
 
 settings = Settings()
