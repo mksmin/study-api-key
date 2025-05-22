@@ -20,3 +20,7 @@ pydantic-settings = "^2.9.1"
 sqlalchemy = "^2.0.40"
 asyncpg = "^0.30.0"
 alembic = "^1.15.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
