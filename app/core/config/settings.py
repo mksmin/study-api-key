@@ -3,7 +3,7 @@ from pydantic import PostgresDsn, BaseModel, ValidationError
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-PATH_PWD = Path(__file__).parent.parent.parent.parent
+PATH_PWD = Path(__file__).absolute().parent.parent.parent.parent
 
 
 class DatabaseConfig(BaseModel):
@@ -21,7 +21,7 @@ class DatabaseConfig(BaseModel):
     max_overflow: int = 10,
 
     @property
-    def url(self) -> PostgresDsn:
+    def url(self) -> str:
         try:
             url_path = MultiHostUrl.build(
                 scheme=f'{self.scheme}+{self.engine}',
@@ -33,7 +33,7 @@ class DatabaseConfig(BaseModel):
             )
         except ValidationError:
             raise ValueError("Invalid URL")
-        return PostgresDsn(url_path)
+        return str(PostgresDsn(url_path))
 
 
 class RunConfig(BaseModel):
